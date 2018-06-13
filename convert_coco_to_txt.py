@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jun 12 14:58:39 2018
 
-@author: kunl
+@author: shiro
 """
 
 import os
