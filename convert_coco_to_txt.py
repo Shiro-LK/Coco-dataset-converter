@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
+Created on Tue Jun 12 14:58:39 2018
 
-@author: shiro
+@author: kunl
 """
 
 import os
@@ -28,8 +29,16 @@ def convert_annotation(path, mode=None, dir_img='val2014/'):
                 value1 = list(filter(lambda item3: item3['id'] == category_id,data['categories']))
                 name = value1[0]['name']
                 box = item2['bbox']
-
                 
+                # PASCAL VOC format
+                if name == 'tv':
+                    name = 'tvmonitor'
+                elif name == 'motorcycle':
+                    name = 'motorbike'
+                elif name == 'airplane':
+                    name = "aeroplane"
+                elif name == "couch":
+                    name = "sofa"
                 xmin = int(round(float(box[0])))
                 ymin = int(round(float(box[1])))
                 xmax = int(round(float(box[2]) + float(box[0]) ))
