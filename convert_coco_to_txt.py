@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 12 14:58:39 2018
-
-@author: kunl
-"""
 
 import os
 import json
@@ -14,6 +9,9 @@ classes = ["person","bicycle","car","motorcycle","airplane","bus","train","truck
 
 
 def convert_annotation(path, mode=None, dir_img='val2014/'):
+    '''
+        Convert coco .json format to .txt format : filename, xmin, ymin, xmax,ymax, class
+    '''
     with open(path,'r') as f:
         data = json.load(f)
     with open(path.replace('.json', '.txt'),'w') as f:
@@ -39,17 +37,60 @@ def convert_annotation(path, mode=None, dir_img='val2014/'):
                     name = "aeroplane"
                 elif name == "couch":
                     name = "sofa"
-                xmin = int(round(float(box[0])))
-                ymin = int(round(float(box[1])))
+                elif name =='dining table':
+                    name = 'diningtable'
+                elif name == 'potted plant':
+                    name = 'pottedplant'
+                xmin = int(float(box[0]))
+                ymin = int(float(box[1]))
                 xmax = int(round(float(box[2]) + float(box[0]) ))
-                ymax = int(round( float(box[1]) + float(box[3])))
+                ymax = int(round(float(box[1]) + float(box[3])))
+                if xmin > xmax:
+                    print('xmin > xmax')
+                elif xmin + 2 > xmax:
+                    xmax = xmin + 2
+                if ymin > ymax:
+                    print('ymin > ymax')
+                elif ymin + 2 > ymax:
+                    ymax = ymin + 2  
                 #print(file_name, width, height, str(xmin), str(ymin), str(xmax), str(ymax), name)
                 if mode is not None:
                     f.write(dir_img+file_name+','+str(width)+','+str(height)+','+str(xmin)+','+str(ymin)+','+str(xmax)+',' + str(ymax) +','+ name +',' + mode + '\n')
                 else:
                     f.write(dir_img+file_name+','+str(width)+','+str(height)+','+str(xmin)+','+str(ymin)+','+str(xmax)+',' + str(ymax) +','+ name + '\n')
-
+def combine_files(listFile, filename):
+    final_data = []
+    for file in listFile:
+        with open(file, 'r') as f:
+            for data in f:
+                final_data.append(data)
+    with open(filename, 'w') as f:
+        for data in final_data:
+            f.write(data)
             
 if __name__ == '__main__':
-    path = 'COCO/annotations/instances_train2014.json'
-    convert_annotation(path, mode='training', dir_img='train2014/')
+#    print('train 2017')
+#    path = '../annotations2017/instances_train2017.json'
+#    convert_annotation(path, mode='training', dir_img='COCO/train2017/')
+#    
+#    print('val 2017')
+#    path = '../annotations2017/instances_val2017.json'
+#    convert_annotation(path, mode='testing', dir_img='COCO/val2017/')
+#    
+#    print('train 2014')
+#    path = '../annotations2014/instances_train2014.json'
+#    convert_annotation(path, mode='training', dir_img='COCO/train2014/')
+#    
+#    print('val 2014')
+#    path = '../annotations2014/instances_val2014.json'
+#    convert_annotation(path, mode='training', dir_img='COCO/val2014/')
+#    
+#    print('combine files')
+#    combine_files(['../annotations2017/instances_train2017.txt', '../annotations2017/instances_val2017.txt'], 'coco2017.txt')
+#    combine_files(['../annotations2014/instances_train2014.txt', '../annotations2014/instances_val2014.txt'], 'coco2014.txt')
+#    combine_files(['coco2014.txt', 'coco2017.txt'], 'coco_dataset.txt')
+    combine_files(['../../labels/VOCfulltrain.txt', 'coco_dataset.txt'], 'coco_VOC++.txt')
+   
+    
+    #combine_files(['../../labels/VOC2007train.txt', '../../VOCdevkit/labels/VOC2012train.txt'], 'VOCtrain.txt')
+    combine_files(['../../labels/VOCtrain.txt', 'coco_dataset.txt'], 'coco_VOCtrain.txt')
